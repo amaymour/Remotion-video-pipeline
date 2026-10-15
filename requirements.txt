@@ -1,0 +1,5 @@
+# Python dependencies for the video generation pipeline.
+# Used by .github/workflows/generate-video.yml (also enables actions/setup-python
+# pip caching, which requires a requirements.txt or pyproject.toml to exist).
+edge-tts
+requests
