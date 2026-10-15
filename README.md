@@ -4,7 +4,7 @@ Zero-cost, cloud-based automated video generation pipeline.
 
 - **Dashboard:** `index.html` — dark Tailwind control panel. Pick a niche, click **🚀 Initialize Cloud Video Engine**, which fires a GitHub `repository_dispatch` (`trigger-video-generation`) with `{"event_type": "trigger-video-generation", "client_payload": {"niche": "..."}}`.
 - **Trends:** `fetch_trends.py` harvests public Google News RSS (no API key) into `live_trends.csv`.
-- **Script + voiceover:** `scripts/generate_script.py` routes through the local **OmniRoute gateway** (`http://localhost:20128/v1`, key `sk_omniroute`) with a zero-cost template fallback, then renders `data/voiceover.mp3` via **edge-tts**.
+- **Script + voiceover:** `scripts/generate_script.py` routes through the local **OmniRoute gateway** (`http://localhost:20128/v1`, key `sk_omniroute`) with a zero-cost template fallback, then renders `public/voiceover.mp3` via **edge-tts** (served to Remotion via `staticFile`, and used to size the clip length).
 - **Render:** `src/Root.tsx` + `src/Composition.tsx` build a kinetic-typography Remotion composition (`<Audio />` for voiceover/ambience) and compile `out/video.mp4`.
 - **CI:** `.github/workflows/generate-video.yml` runs the whole pipeline on headless GitHub Actions Ubuntu runners and uploads `video` artifact.
 - **Pages:** `.github/workflows/deploy-pages.yml` hosts the dashboard on GitHub Pages.
@@ -36,41 +36,38 @@ npm run typecheck        # tsc --noEmit
 npm run dev              # remotion preview (local)
 ```
 
-Render locally:
+Render locally (CI is the production render target):
 
 ```bash
-npm run build            # remotion render src/index.ts Demo out/video.mp4
+npm run build -- --props=data/script.json
 ```
 
-> Rendering requires a headless Chromium/Chrome (Remotion renders frames through
-> a browser before ffmpeg encodes the MP4). GitHub Actions `ubuntu-latest`
-> runners ship Chrome, so the CI pipeline renders end-to-end. On this arm64 /
-> Termux box there is no Chromium available, so local `remotion render` needs a
-> browser installed first — CI is the production render target.
+> Remotion 4.0.535 renders frames through a headless browser and then encodes the
+> MP4 with its bundled ffmpeg. It downloads and uses its own pinned **Chrome
+> Headless Shell** (not the runner's system Chrome), so no system browser setup
+> is needed. GitHub Actions `ubuntu-latest` is the production render target.
+>
+> Input props are passed with `--props=<path-to-json>` (a JSON string or path to
+> a JSON file). There is no `--props-file` flag. `calculateMetadata` sizes the
+> clip from the real TTS audio duration, so the narration always fits.
 
-## Connect your new GitHub account & push
+## Repository
 
-This repo is initialized locally with no remote. From inside the repo:
+Live at **https://github.com/amaymour/Remotion-video-pipeline** (account `amaymour`).
 
-```bash
-git init -b main
-git add -A
-git commit -m "chore: bootstrap remotion video pipeline"
+- **Dashboard:** https://amaymour.github.io/Remotion-video-pipeline/
+- **Run the pipeline:** pick a niche on the dashboard (paste a Classic PAT with
+  `repo` scope), or `gh workflow run generate-video.yml -f niche="Tech Tools"`.
+- **Output:** each run uploads a `video` artifact (h264 1080p + AAC voiceover).
 
-# Add your new-account remote (replace with your repo URL):
-git remote add origin https://github.com/<YOUR_NEW_ACCOUNT>/remotion-video-pipeline.git
-
-# Push (auth with your GitHub Classic PAT when prompted):
-git push -u origin main
-```
-
-Then enable GitHub Pages in repo settings (Build source: GitHub Actions) so `index.html` is served at `https://<account>.github.io/remotion-video-pipeline/`.
+GitHub Pages is configured with `build_type: workflow`; `deploy-pages.yml`
+publishes `index.html` on every push to `main`.
 
 ## Dashboard → CI wiring
 
 1. In `index.html`, set `REPO_OWNER` and `REPO_NAME` to your new account/repo.
 2. Paste a GitHub Classic PAT with `repo` scope into the token field (it is **never stored** — read only at dispatch time).
-3. Click **🚀 Initialize Cloud Video Engine** → `repository_dispatch` → `generate-video.yml` runs on GitHub Actions.
+3. Click **🚀 Initialize Cloud Video Engine** → `repository_dispatch` → `generate-video.yml` runs on GitHub Actions. The workflow renders with `--props=data/script.json` so the generated script + voiceover reach the composition.
 4. When the run completes, the `#download-zone` opens with a link to the run / `video.mp4` artifact.
 
 ## OmniRoute (local AI gateway)
