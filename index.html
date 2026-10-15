@@ -106,6 +106,19 @@
           />
         </div>
         <div class="md:col-span-12">
+          <label class="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wider">
+            GitHub Token
+            <span class="text-slate-500 normal-case">(Classic PAT, repo scope &mdash; never stored)</span>
+          </label>
+          <input
+            id="gh-token"
+            type="password"
+            autocomplete="off"
+            placeholder="ghp_&hellip;"
+            class="w-full bg-[#111827] border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+          />
+        </div>
+        <div class="md:col-span-12">
           <button
             type="submit"
             id="init-btn"
@@ -205,8 +218,8 @@
     // NOTE: repository_dispatch requires authentication. Fill these in or
     // provide a GitHub Classic PAT below. The token is never stored; it is
     // read only from the page input at dispatch time.
-    const REPO_OWNER = "YOUR_GITHUB_USERNAME" // <-- replace with your account
-    const REPO_NAME = "remotion-video-pipeline" // <-- replace with your repo name
+    const REPO_OWNER = "amaymour" // GitHub account
+    const REPO_NAME = "Remotion-video-pipeline" // GitHub repo
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault()
