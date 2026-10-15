@@ -1,0 +1,38 @@
+{
+  "name": "remotion-video-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zero-cost automated video generation pipeline — Remotion + GitHub Actions + OmniRoute",
+  "type": "module",
+  "scripts": {
+    "dev": "remotion preview",
+    "build": "remotion render src/index.ts Demo out/video.mp4",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "node scripts/fix-renderer.cjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "4.0.0"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.0",
+    "@remotion/player": "4.0.0",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.5.0",
+    "vite": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "allowScripts": {
+    "esbuild": true
+  },
+  "remotion": "4.0.0",
+  "@remotion/cli": "4.0.0",
+  "@remotion/player": "4.0.0"
+}

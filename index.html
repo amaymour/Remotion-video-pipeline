@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloud Video Engine — Remotion Pipeline</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+    }
+    .mono {
+      font-family: "JetBrains Mono", monospace;
+    }
+    .glass {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .btn-primary {
+      @apply bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500;
+    }
+    .btn-primary:hover {
+      @apply from-indigo-400 via-purple-500 to-pink-400;
+    }
+    .btn-primary:disabled {
+      @apply opacity-50 cursor-not-allowed;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out both;
+    }
+    .pulse-dot::after {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #22d3ee;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #22d3ee;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+  </style>
+</head>
+<body class="bg-[#0b0f19] text-slate-200 min-h-screen selection:bg-indigo-500 selection:text-white">
+
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="mb-10">
+      <h1 class="text-4xl font-extrabold tracking-tight text-white mb-2">
+        🎬 Cloud Video Engine
+      </h1>
+      <p class="text-slate-400">
+        Zero-cost automated video generation &mdash; Remotion &bull; GitHub Actions &bull; OmniRoute
+      </p>
+    </header>
+
+    <!-- Step 1: Niche selection + CTA -->
+    <section class="glass rounded-2xl p-6 md:p-8 mb-8 shadow-2xl pulse-dot relative">
+      <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 rounded bg-indigo-500 flex items-center justify-center text-xs font-bold">1</span>
+        Niche Selection
+      </h2>
+      <form id="video-form" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        <div class="md:col-span-7">
+          <label class="block text-sm font-medium text-slate-300 mb-2 uppercase tracking-wider">
+            Niche
+          </label>
+          <select
+            id="niche"
+            class="w-full bg-[#111827] border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+          >
+            <option value="Tech Tools">Tech Tools</option>
+            <option value="Keyboard Modding">Keyboard Modding</option>
+            <option value="Finance Automation">Finance Automation</option>
+            <option value="AI Productivity">AI Productivity</option>
+            <option value="Cybersecurity">Cybersecurity</option>
+            <option value="No-Code">No-Code</option>
+            <option value="SaaS Founder">SaaS Founder</option>
+            <option value="Custom...">Custom &hellip;</option>
+          </select>
+        </div>
+        <div class="md:col-span-5" id="custom-niche-wrap" style="display: none">
+          <label class="block text-sm font-medium text-slate-300 mb-2 uppercase tracking-wider">
+            Custom Keyword
+          </label>
+          <input
+            id="custom-niche"
+            type="text"
+            placeholder="Enter your niche keyword"
+            class="w-full bg-[#111827] border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+          />
+        </div>
+        <div class="md:col-span-12">
+          <button
+            type="submit"
+            id="init-btn"
+            class="btn-primary text-white font-bold text-lg py-4 rounded-xl uppercase tracking-wider shadow-lg hover:shadow-indigo-500/40 transition w-full md:w-auto md:col-span-3"
+          >
+            🚀 Initialize Cloud Video Engine
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Step 2: Console logs -->
+    <section class="glass rounded-2xl p-6 mb-8 shadow-2xl relative pulse-dot">
+      <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <span class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-xs font-bold">2</span>
+        Execution Logs
+      </h2>
+      <div
+        id="console-logs"
+        class="mono text-sm bg-black/40 rounded-lg p-4 h-72 overflow-y-auto border border-slate-700/40 text-slate-300 whitespace-pre-wrap"
+      >
+        <div class="text-slate-500">Ready. Select a niche and click &ldquo;Initialize Cloud Video Engine&rdquo; to dispatch the pipeline.</div>
+      </div>
+    </section>
+
+    <!-- Step 3: Download zone (hidden by default) -->
+    <div
+      id="download-zone"
+      class="hidden glass rounded-2xl p-6 md:p-8 shadow-2xl border border-emerald-500/30 animate-fade-in"
+    >
+      <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <span class="w-8 h-8 rounded bg-emerald-500 flex items-center justify-center text-xs font-bold">3</span>
+        Video Ready
+      </h2>
+      <p class="text-slate-300 mb-4">
+        Your video has been rendered on zero-cost GitHub Actions cloud runners.
+      </p>
+      <a
+        id="download-link"
+        href="#"
+        class="btn-primary text-white font-bold text-lg py-4 rounded-xl inline-block text-center w-full md:w-auto"
+      >
+        ⬇️ Download video.mp4
+      </a>
+      <p id="run-info" class="text-xs text-slate-500 mt-4 mono"></p>
+    </div>
+  </div>
+
+  <script>
+    /* --------------------------------------------------------------
+       Niche dropdown: show custom keyword input when "Custom..." chosen
+       -------------------------------------------------------------- */
+    const nicheSelect = document.getElementById("niche")
+    const customWrap = document.getElementById("custom-niche-wrap")
+    const customInput = document.getElementById("custom-niche")
+    nicheSelect.addEventListener("change", () => {
+      if (nicheSelect.value === "Custom...") {
+        customWrap.style.display = "block"
+        customInput.required = true
+      } else {
+        customWrap.style.display = "none"
+        customInput.required = false
+      }
+    })
+
+    /* --------------------------------------------------------------
+       Log helper (writes to #console-logs in real time)
+       -------------------------------------------------------------- */
+    const logs = document.getElementById("console-logs")
+    function log(msg, type = "info") {
+      const now = new Date().toLocaleTimeString()
+      const line = document.createElement("div")
+      const colors = {
+        info: "text-slate-300",
+        success: "text-emerald-400",
+        error: "text-rose-400",
+        run: "text-indigo-400",
+        warn: "text-amber-400",
+      }
+      line.className = "mb-2 border-l-2 pl-2 " + (colors[type] || colors.info)
+      line.style.borderLeftColor =
+        type === "success" ? "#22d3ee" : type === "error" ? "#f87171" : type === "run" ? "#818cf8" : "#475569"
+      line.textContent = `[${now}] ${msg}`
+      logs.appendChild(line)
+      logs.scrollTop = logs.scrollHeight
+    }
+
+    /* --------------------------------------------------------------
+       Form submit -> GitHub repository_dispatch
+       -------------------------------------------------------------- */
+    const form = document.getElementById("video-form")
+    const btn = document.getElementById("init-btn")
+    const downloadZone = document.getElementById("download-zone")
+    const downloadLink = document.getElementById("download-link")
+    const runInfo = document.getElementById("run-info")
+
+    // NOTE: repository_dispatch requires authentication. Fill these in or
+    // provide a GitHub Classic PAT below. The token is never stored; it is
+    // read only from the page input at dispatch time.
+    const REPO_OWNER = "YOUR_GITHUB_USERNAME" // <-- replace with your account
+    const REPO_NAME = "remotion-video-pipeline" // <-- replace with your repo name
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault()
+      downloadZone.classList.add("hidden")
+      runInfo.textContent = ""
+      btn.disabled = true
+      btn.innerHTML = "⏳ Dispatching to GitHub Actions&hellip;"
+
+      let niche = nicheSelect.value
+      if (niche === "Custom...") {
+        niche = customInput.value.trim() || "General"
+      }
+
+      log(`Niche selected: "${niche}"`, "info")
+      log("Building repository_dispatch payload&hellip;", "info")
+
+      const payload = {
+        event_type: "trigger-video-generation",
+        client_payload: { niche },
+      }
+
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`
+      const tokenInput = document.getElementById("gh-token")
+      const token = tokenInput ? tokenInput.value.trim() : ""
+
+      if (!token) {
+        log(
+          "No GitHub token provided. Paste a Classic PAT (repo scope) into the token field, or trigger the run manually from the Actions tab.",
+          "error"
+        )
+        btn.disabled = false
+        btn.innerHTML = "🚀 Initialize Cloud Video Engine"
+        return
+      }
+
+      try {
+        log(`POST ${url}`, "run")
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${token}`,
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        })
+
+        if (res.ok) {
+          log("Dispatch accepted — GitHub Actions pipeline started.", "success")
+          log(
+            "Watch the run: https://github.com/" +
+              REPO_OWNER +
+              "/" +
+              REPO_NAME +
+              "/actions",
+            "run"
+          )
+          startPolling(REPO_OWNER, REPO_NAME, token)
+        } else {
+          const txt = await res.text()
+          log(`Dispatch failed (${res.status}): ${txt}`, "error")
+        }
+      } catch (err) {
+        log(`Network error: ${err.message}`, "error")
+      } finally {
+        btn.disabled = false
+        btn.innerHTML = "🚀 Initialize Cloud Video Engine"
+      }
+    })
+
+    /* --------------------------------------------------------------
+       Poll for completed run -> surface artifact download link
+       -------------------------------------------------------------- */
+    async function startPolling(owner, repo, token) {
+      log("Polling for completed run + artifact&hellip;", "run")
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+      }
+      for (let i = 0; i < 36; i++) {
+        await new Promise((r) => setTimeout(r, 10000))
+        try {
+          const runsRes = await fetch(
+            `https://api.github.com/repos/${owner}/${repo}/actions/runs?event=repository_dispatch&per_page=5`,
+            { headers }
+          )
+          if (!runsRes.ok) continue
+          const runs = await runsRes.json()
+          const run = runs.workflow_runs?.[0]
+          if (!run) continue
+
+          log(`Run ${run.id} status: ${run.status}`, "run")
+          if (run.status === "completed") {
+            if (run.conclusion === "success") {
+              const artRes = await fetch(
+                `https://api.github.com/repos/${owner}/${repo}/actions/runs/${run.id}/artifacts`,
+                { headers }
+              )
+              if (artRes.ok) {
+                const arts = await artRes.json()
+                const video = arts.artifacts?.find((a) => a.name === "video")
+                if (video) {
+                  downloadLink.href = `https://github.com/${owner}/${repo}/actions/runs/${run.id}`
+                  downloadZone.classList.remove("hidden")
+                  runInfo.textContent = `Run #${run.id} • ${new Date(run.updated_at).toLocaleString()} • Artifact: video`
+                  log("Video ready for download!", "success")
+                }
+              }
+            } else {
+              log(`Run concluded: ${run.conclusion}`, "error")
+            }
+            break
+          }
+        } catch (err) {
+          // keep polling
+        }
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+name: Generate Video
+
+on:
+  repository_dispatch:
+    types: [trigger-video-generation]
+  workflow_dispatch:
+    inputs:
+      niche:
+        description: "Niche keyword (e.g. Tech Tools)"
+        required: false
+        default: "Tech Tools"
+
+env:
+  NODE_VERSION: "24"
+  PYTHON_VERSION: "3.11"
+  # OmniRoute gateway base context. Default is the user's LOCAL stack
+  # (http://localhost:20128/v1) which github-hosted runners cannot reach.
+  # Set OMNIROUTE_BASE_URL as a repository variable to point at a reachable
+  # endpoint; otherwise the pipeline falls back to a zero-cost template script.
+  OMNIROUTE_BASE_URL: ${{ vars.OMNIROUTE_BASE_URL || 'http://localhost:20128/v1' }}
+  OMNIROUTE_API_KEY: ${{ secrets.OMNIROUTE_API_KEY || 'sk_omniroute' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install edge-tts requests
+
+      - name: Fetch live trends (free, Google News RSS)
+        run: |
+          python fetch_trends.py "${{ github.event.client_payload.niche || inputs.niche || 'Tech Tools' }}"
+
+      - name: Generate script + voiceover (OmniRoute + edge-tts)
+        env:
+          NICHE: ${{ github.event.client_payload.niche || inputs.niche || 'Tech Tools' }}
+        run: |
+          python scripts/generate_script.py
+
+      - name: Typecheck Remotion sources
+        run: npm run typecheck
+
+      - name: Verify browser available for Remotion render
+        # GitHub Actions ubuntu-latest ships Google Chrome; Remotion renders
+        # frames through a headless browser before ffmpeg encodes the MP4.
+        run: google-chrome --version || chromium --version || chromium-browser --version
+
+      - name: Render video with Remotion
+        run: |
+          npx remotion render src/index.ts Demo out/video.mp4 \
+            --props-file data/script.json
+
+      - name: Upload video artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video
+          path: out/video.mp4
+          retention-days: 5
+
+      - name: Show ffprobe info
+        if: always()
+        run: |
+          if [ -f out/video.mp4 ]; then ffprobe -v error -show_format -show_streams out/video.mp4 || true; fi

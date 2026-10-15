@@ -1,0 +1,19 @@
+node_modules/
+out/
+dist/
+.build/
+.env
+*.log
+.DS_Store
+.pnp
+.yarn/install-state.gz
+
+# Generated at runtime by the pipeline (do not commit)
+live_trends.csv
+data/*.mp3
+data/script.json
+data/script.txt
+
+# IDE
+.idea/
+.vscode/*
