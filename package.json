@@ -7,17 +7,16 @@
   "scripts": {
     "dev": "remotion preview",
     "build": "remotion render src/index.ts Demo out/video.mp4",
-    "typecheck": "tsc --noEmit",
-    "postinstall": "node scripts/fix-renderer.cjs"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "remotion": "4.0.0"
+    "remotion": "4.0.535"
   },
   "devDependencies": {
-    "@remotion/cli": "4.0.0",
-    "@remotion/player": "4.0.0",
+    "@remotion/cli": "4.0.535",
+    "@remotion/player": "4.0.535",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "autoprefixer": "^10.4.0",
@@ -31,8 +30,5 @@
   },
   "allowScripts": {
     "esbuild": true
-  },
-  "remotion": "4.0.0",
-  "@remotion/cli": "4.0.0",
-  "@remotion/player": "4.0.0"
+  }
 }

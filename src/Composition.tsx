@@ -6,10 +6,6 @@ import {
   useVideoConfig,
 } from "remotion"
 
-// Remotion 4.0.0's <Audio> props type is overly strict vs. @types/react;
-// alias to `any` so the (optional) src prop is accepted without touching runtime.
-const RemotionAudio: any = Audio;
-
 interface Props {
   /** Narration script text (injected via --props-file in CI). */
   script?: string
@@ -151,7 +147,7 @@ export const Demo = (props: Props) => {
       </div>
 
       {/* Voiceover / ambient background audio via Remotion <Audio /> */}
-      {audio && <RemotionAudio src={audio} />}
+      {audio && <Audio src={audio} />}
     </div>
   )
 }
