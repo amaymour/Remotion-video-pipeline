@@ -13,6 +13,7 @@ live_trends.csv
 data/*.mp3
 data/script.json
 data/script.txt
+public/voiceover.mp3
 
 # IDE
 .idea/

@@ -13,7 +13,7 @@ Runs on GitHub Actions (headless Ubuntu runner). Steps:
      tunnel is exposed), fall back to a pure-Python template script — no API
      key, no paid service, 100% free.
   4. Write data/script.json (script text + audio path) for Remotion render.
-  5. Generate data/voiceover.mp3 via edge-tts (Microsoft Edge TTS, free).
+  5. Generate public/voiceover.mp3 via edge-tts (Microsoft Edge TTS, free).
 
 Environment:
   OMNIROUTE_BASE_URL  base context of the OmniRoute gateway (default http://localhost:20128/v1)
@@ -34,9 +34,12 @@ import urllib.request
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+PUBLIC_DIR = os.path.join(BASE_DIR, "public")
 SCRIPT_JSON = os.path.join(DATA_DIR, "script.json")
 TRENDS_CSV = os.path.join(BASE_DIR, "live_trends.csv")
-VOICEOVER_MP3 = os.path.join(DATA_DIR, "voiceover.mp3")
+# Remotion only web-serves the public/ directory, so the voiceover must live
+# there (referenced as staticFile("voiceover.mp3")) to be picked up in the render.
+VOICEOVER_MP3 = os.path.join(PUBLIC_DIR, "voiceover.mp3")
 
 OMNIROUTE_BASE = os.environ.get("OMNIROUTE_BASE_URL", "http://localhost:20128/v1")
 if OMNIROUTE_BASE.endswith("/"):
@@ -141,8 +144,8 @@ def generate_script(rows: list[dict]) -> str:
 
 
 def generate_voiceover(script: str) -> None:
-    """Render script to data/voiceover.mp3 using edge-tts (free, headless)."""
-    os.makedirs(DATA_DIR, exist_ok=True)
+    """Render script to public/voiceover.mp3 using edge-tts (free, headless)."""
+    os.makedirs(PUBLIC_DIR, exist_ok=True)
     try:
         import edge_tts  # type: ignore
         import asyncio
@@ -176,7 +179,7 @@ def main() -> int:
     payload = {
         "niche": NICHE,
         "script": script,
-        "audio": "data/voiceover.mp3",
+        "audio": "voiceover.mp3",
         "trends_count": len(rows),
     }
     with open(SCRIPT_JSON, "w", encoding="utf-8") as f:
