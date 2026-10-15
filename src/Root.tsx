@@ -43,7 +43,8 @@ export const Root = () => (
     width={1920}
     height={1080}
     calculateMetadata={calculateDemoMetadata}
-    // Render-time props (script, audio) are injected via --props / --props-file
-    // in .github/workflows/generate-video.yml (from data/script.json).
+    // Render-time props (script, audio) are injected via --props=data/script.json
+    // in .github/workflows/generate-video.yml. (The flag is --props, not
+    // --props-file; Remotion accepts a JSON string or a path to a JSON file.)
   />
 )

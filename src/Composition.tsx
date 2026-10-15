@@ -8,9 +8,9 @@ import {
 } from "remotion"
 
 export interface DemoProps {
-  /** Narration script text (injected via --props-file in CI). */
+  /** Narration script text (injected via --props in CI). */
   script?: string
-  /** Voiceover file name relative to public/ (injected via --props-file). */
+  /** Voiceover file name relative to public/ (injected via --props). */
   audio?: string
 }
 
