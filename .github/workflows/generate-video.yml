@@ -81,7 +81,12 @@ jobs:
           path: out/video.mp4
           retention-days: 5
 
-      - name: Show ffprobe info
+      - name: Report output video (Remotion's bundled ffprobe)
         if: always()
         run: |
-          if [ -f out/video.mp4 ]; then ffprobe -v error -show_format -show_streams out/video.mp4 || true; fi
+          if [ -f out/video.mp4 ]; then
+            ls -lh out/video.mp4
+            npx remotion ffprobe -v error -show_entries format=duration,size,bit_rate -show_entries stream=codec_type,codec_name,width,height,channels -of default=noprint_wrappers=1 out/video.mp4
+          else
+            echo "::warning::out/video.mp4 was not produced"
+          fi
